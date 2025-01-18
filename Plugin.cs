@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CommandMod;
 
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInPlugin("me.muj.commandmod", "CommandMod","1.0.0")]
 public class Plugin : BaseUnityPlugin
 {
     public static Plugin Instance { get; private set; } = null!;
