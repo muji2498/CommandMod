@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+    <Import Project="GameDir.targets" />
+    
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
         <AssemblyName>CommandMod</AssemblyName>
@@ -27,26 +29,26 @@
 
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
-        <HintPath>..\..\Nuclear Option Build\Nuclear Option - Modded\NuclearOption_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOption_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="Mirage">
-        <HintPath>..\..\Nuclear Option Build\Nuclear Option - Modded\NuclearOption_Data\Managed\Mirage.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOption_Data\Managed\Mirage.dll</HintPath>
       </Reference>
       <Reference Include="Newtonsoft.Json">
-        <HintPath>..\..\Nuclear Option Build\Nuclear Option - Modded\BepInEx\plugins\Newtonsoft.Json.dll</HintPath>
+        <HintPath>$(GameDir)\BepInEx\plugins\Newtonsoft.Json.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine">
-        <HintPath>..\..\Nuclear Option Build\Nuclear Option - Modded\NuclearOption_Data\Managed\UnityEngine.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.CoreModule">
-        <HintPath>..\..\Nuclear Option Build\Nuclear Option - Modded\NuclearOption_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.UI">
-        <HintPath>..\..\Nuclear Option Build\Nuclear Option - Modded\NuclearOption_Data\Managed\UnityEngine.UI.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.UI.dll</HintPath>
       </Reference>
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="xcopy /Y /F &quot;$(TargetDir)CommandMod.dll&quot; &quot;D:\Nuclear Option Build\Nuclear Option - Modded\BepInEx\plugins&quot;" />
+      <Exec Command="xcopy /Y /F &quot;$(TargetDir)CommandMod.dll&quot; &quot;$(GameDir)\BepInEx\plugins&quot;" />
     </Target>
 </Project>

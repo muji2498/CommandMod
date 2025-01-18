@@ -1,0 +1,5 @@
+<Project>
+    <PropertyGroup>
+        <GameDir>insert game directory here</GameDir>
+    </PropertyGroup>
+</Project>
