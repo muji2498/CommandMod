@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using BepInEx;
 using BepInEx.Logging;
 using CommandMod.CommandHandler;
 using HarmonyLib;
+using NuclearOption.Networking;
 using UnityEngine;
 
 namespace CommandMod;
@@ -35,146 +35,159 @@ public class Plugin : BaseUnityPlugin
         harmony.PatchAll();
     }
 
-    
-    [ConsoleCommand("list")]
-    private static void ListCommand(string[] args, CommandObjects context)
+    [ConsoleCommand("ping")]
+    public static void Ping(string[] args, CommandObjects arg2)
     {
-        var callingPlayer = context.Player;
-        
-        // Create the complete message
-        var message = new StringBuilder();
-        foreach (var command in ChatCommandHandler.Commands)
-        {
-            message.Append($"{command.Key} - isHostOnly? {command.Value.OnlyHost}\n");
-        }
-    
-        // Break the message into chunks of 128 characters
-        var fullMessage = message.ToString();
-        var chunks = new List<string>();
-        for (int i = 0; i < fullMessage.Length; i += 128)
-        {
-            int chunkLength = Math.Min(128, fullMessage.Length - i);
-            chunks.Add(fullMessage.Substring(i, chunkLength));
-        }
-    
-        // Send each chunk as a separate message
-        foreach (var chunk in chunks)
-        {
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, chunk, callingPlayer, false);
-        }
+        Wrapper.ChatManager.TargetReceiveMessage(arg2.Player.Owner, "Pong", arg2.Player, false);
     }
     
-    [ConsoleCommand("steamid", true)]
-    private static void SteamIdCommand(string[] args, CommandObjects arg2)
+    [ConsoleCommand("listplayers")]
+    public static void ListPlayers(string[] args, CommandObjects arg2)
     {
         var callingPlayer = arg2.Player;
-        
-        var message = $"Invalid parameter amount needs to be like: (steamid name)";
-
-        if (args.Length == 0)
+        StringBuilder sb = new StringBuilder();
+        foreach (var player in UnitRegistry.playerLookup)
         {
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
+            sb.Append($"{player.Value.PlayerName}, ");
+        }
+        Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, sb.ToString(), callingPlayer, false);
+    }
+
+    [ConsoleCommand("kick", true)]
+    public static void KickPlayer(string[] args, CommandObjects arg2)
+    {
+        if (args.Length < 1)
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(arg2.Player.Owner, "Usage: [kick playername|steamid]", arg2.Player, false);
             return;
         }
-        
+        var callingPlayer = arg2.Player;
         var targetPlayer = args[0];
-        try
+        var playerToKick = Utils.IdentifyPlayer(targetPlayer);
+        if (playerToKick == null)
         {
-            var player = FindPlayerByName(targetPlayer);
-            message = $"{player.PlayerName} steamId is {player.SteamID}";
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, player, false);
-        }
-        catch (Exception e)
-        {
-            message = $"Couldn't find player: Command given (steamid {targetPlayer})";
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
-        }
-    }
-    
-    [ConsoleCommand("fps", true)]
-    private static void FPSCommand(string[] args, CommandObjects arg2)
-    {
-        var callingPlayer = arg2.Player;
-        
-        var message = $"Invalid parameter amount needs to be like: (fps amount)";
-
-        if (args.Length == 0)
-        {
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
+            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, "Player not found.", callingPlayer, false);
             return;
         }
-        
-        var fps = args[0];
-        try
-        {
-            if (int.TryParse(fps, out var result))
-            {
-                Application.targetFrameRate = result;
-            }
-        }
-        catch (Exception e)
-        {
-            message = $"Couldn't find player: Command given (steamid)";
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
-        }
+        NetworkManagerNuclearOption.i.KickPlayerAsync(playerToKick);
     }
 
     [ConsoleCommand("addmoney", true)]
-    private static void AddMoneyCommand(string[] args, CommandObjects arg2)
+    public static void AddMoneyCommand(string[] args, CommandObjects arg2)
     {
-        var callingPlayer = arg2.Player;
-        var message = $"Invalid parameter amount needs to be like: (addmoney @me|steamid|name <amount>)";
-
-        if (args.Length == 0)
+        if (args.Length < 2)
         {
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
+            Wrapper.ChatManager.TargetReceiveMessage(arg2.Player.Owner, "Usage: [addmoney @me|steamid|name <amount>]", arg2.Player, false);
+            return;
+        }
+
+        var callingPlayer = arg2.Player;
+        var targetPlayer = args[0];
+        var amount = float.Parse(args[1]);
+        if (targetPlayer == "@me")
+        {
+            callingPlayer.AddAllocation(amount);
             return;
         }
         
-        var targetPlayer = args[0];
-        var amount = float.Parse(args[1]);
-        try
+        var player = Utils.IdentifyPlayer(targetPlayer);
+        if (player == null)
         {
-            if (targetPlayer == "@me")
-            {
-                callingPlayer.AddAllocation(amount);
-            }
-            else if (targetPlayer.StartsWith("76"))
-            {
-                var steamId = ulong.Parse(targetPlayer);
-                var player = FindPlayerBySteamId(steamId);
-                player.AddAllocation(amount);
-            }
-            else
-            {
-                var player = FindPlayerByName(targetPlayer);
-                player.AddAllocation(amount);
-            }
+            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, "Player not found.", callingPlayer, false);
+            return;
         }
-        catch (Exception e)
+        player.AddAllocation(amount);
+    }
+    
+    [ConsoleCommand("ban", true)]
+    public static void Ban(string[] args, CommandObjects context)
+    {
+        if (args.Length < 1)
         {
-            message = $"Couldn't find player: Command given (addmoney {targetPlayer} {amount})";
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Usage: [ban steamid]", context.Player, false);
+            return;
         }
+
+        var steamId = args[0];
+        if (!ulong.TryParse(steamId, out var id))
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Invalid ulong. Ensure it's a numeric value.", context.Player, false);
+            return;
+        }
+
+        var playerIdField = AccessTools.Field(typeof(BlockList), "playerId");
+        if (playerIdField == null)
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Could not access block list.", context.Player, false);
+            return;
+        }
+        
+        var bannedPlayers = playerIdField.GetValue(null) as List<ulong> ?? new List<ulong>();
+        if (bannedPlayers.Contains(id))
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Player is already banned.", context.Player, false);
+            return;
+        }
+        
+        bannedPlayers.Add(id);
+        playerIdField.SetValue(null, bannedPlayers);
+        
+        Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, $"Player {id} banned.", context.Player, false);
+    }
+    
+    [ConsoleCommand("unban", true)]
+    public static void Unban(string[] args, CommandObjects context)
+    {
+        if (args.Length < 1)
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Usage: [unban steamid]", context.Player, false);
+            return;
+        }
+
+        var steamId = args[0];
+        if (!ulong.TryParse(steamId, out var id))
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Invalid ulong. Ensure it's a numeric value.", context.Player, false);
+            return;
+        }
+
+        var playerIdField = AccessTools.Field(typeof(BlockList), "playerId");
+        if (playerIdField == null)
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Could not access block list.", context.Player, false);
+            return;
+        }
+        
+        var bannedPlayers = playerIdField.GetValue(null) as List<ulong> ?? new List<ulong>();
+        if (!bannedPlayers.Contains(id))
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Player is not banned.", context.Player, false);
+            return;
+        }
+        
+        bannedPlayers.Remove(id);
+        playerIdField.SetValue(null, bannedPlayers);
+        
+        Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, $"Player {id} unbanned.", context.Player, false);
     }
 
-    private static Player FindPlayerBySteamId(ulong steamId)
+    [ConsoleCommand("setfps", true)]
+    public static void SetFPS(string[] args, CommandObjects context)
     {
-        var first = UnitRegistry.playerLookup.First(p => p.Value.SteamID == steamId);
-        return first.Value;
-    }
+        if (args.Length < 1)
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Usage: [setfps amount]", context.Player, false);
+            return;
+        }
 
-    private static Player FindPlayerByName(string targetPlayer)
-    {
-        var first = UnitRegistry.playerLookup.First(p => p.Value.PlayerName.Contains(targetPlayer));
-        return first.Value;
-    }
-
-    [ConsoleCommand("test", roles: Roles.Moderator | Roles.Owner | Roles.Admin)]
-    private static void TestCommand(string[] args, CommandObjects arg2)
-    {
-        var player = arg2.Player;
-        var message = "Thanks for the message";
-        Wrapper.ChatManager.TargetReceiveMessage(player.Owner, message, player, false);
+        if (!int.TryParse(args[0], out int amount))
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, "Invalid amount. please use a numeric value", context.Player, false);
+            return;
+        }
+        
+        QualitySettings.vSyncCount = 0; 
+        PlayerPrefs.SetInt("Vsync", 0);
+        Application.targetFrameRate = amount;
     }
 }

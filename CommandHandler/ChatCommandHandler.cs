@@ -42,18 +42,23 @@ public class ChatCommandHandler
         
         string commandName = commandParts[0].Substring(1).ToLower();
         string[] args = commandParts.Skip(1).ToArray();
-        
-        if (_commands.TryGetValue(commandName, out CommandMetaData metaData))
+
+        if (!_commands.TryGetValue(commandName, out CommandMetaData metaData))
+        {
+            var message = "Couldn't find any command";
+            Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
+        }
+        else
         {
             if (metaData.OnlyHost && !player.IsHost)
             {
                 Plugin.Logger.LogInfo($"Ignoring Command: {commandName} - Only Host: {player.IsHost}");
-                
+
                 var message = "This command can only be executed by the host.";
                 Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
                 return;
             }
-            
+
             if (metaData.OnlyHost && player.IsHost)
             {
                 // player is host so bypass permission check
@@ -76,14 +81,9 @@ public class ChatCommandHandler
                 Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
                 return;
             }
-            
+
             Plugin.Logger.LogInfo($"({player.PlayerName}) Executing command: {commandName} {string.Join(" ", args)}");
             metaData.Action(args, command);
-        }
-        else
-        {
-            var message = "Couldn't find any command";
-            Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
         }
     }
     

@@ -9,20 +9,32 @@ The config for this mod can be found at `GameInstallDir\BepInEx\config\CommandMo
 
 `Prefix` - This Config will set the prefix that is used to trigger command. Default is `!`
 
-# Usage
+# Built in commands
+
+`ping` - Will message `pong` back to the player that called the command. <br>
+`listplayers` - Will message a comma seperated list of the players connected to the server. <br>
+`kick playername|steamid` - Will kick the player specified. <br>
+`addmoney @me|steamid|name <amount>` - Will add money to the player specified. <br>
+`ban steamid` - Will ban the steamid specified. <br>
+`unban steamid` - Will unban the steamid specified. <br>
+`setfps` - Will set the fps of the server.
+
+# Plugin Usage
 
 To register a command you must use reference `CommandMod.dll` in your project. Once that is done you can use the `ConsoleCommand` attribute. 
-The command plugin will then automatically find and register these command. <br/>
+The command plugin will then automatically find and register these command. <br>
 > **TIP:** if you are making multiple commands that can be grouped together then prefix them with a common name, sort of like this `test.command1` `test.command2` <br/> 
 
-`CommandName` : Required - The name of the command. <br/> 
-`OnlyHost` : Default = false - Flag that only allows the host to run the command <br/>
+`CommandName` : Required - The name of the command. <br> 
+`OnlyHost` : Default = false - Flag that only allows the host to run the command <br>
 `Roles` : Default = Roles.None - The Role(s) needed inorder to execute the command.
 
 >**NOTE:** Commands must have the parameters shown below, they can be named anything. In the args array it will pass in the arguments of the command, 
 > for example if a command is `kick <playername>` you can read the player name by simply reading args[0].
 > <br/>
-> You can access the object of the player who called the command by doing `arg2.Player`
+> You can access the object of the player who called the command by doing `arg2.Player` <br>
+> <br>
+> The command you want to register <b style="color:red;">MUST</b> be static.
 
 ```csharp
 [ConsoleCommand("test"]
@@ -62,9 +74,12 @@ public enum Roles
 
 # Errors
 
-`Skipping. Invalid command attribute: {attribute} - {method.Name} in {assembly.GetName().Name} Please Update the command attribute first.` <br/>
+`Skipping. Invalid command attribute: {attribute} - {method.Name} in {assembly.GetName().Name} Please Update the command attribute first.` <br>
 If you are seeing this error in your console, it is due to the fact that your `ConsoleCommand` is mismatched with the one that is shipped with the ConsoleMod plugin, 
 in order to fix this you will need to rebuild your plugin with the latest ConsoleMod plugin referenced.
+
+`Failed to create delegate for command {commandName}, method needs to be static: {ex.Message}` <br>
+This error will show if the command you try to register is not static.
 
 ## Building Project
 

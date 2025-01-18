@@ -37,6 +37,9 @@
       <Reference Include="Newtonsoft.Json">
         <HintPath>$(GameDir)\BepInEx\plugins\Newtonsoft.Json.dll</HintPath>
       </Reference>
+      <Reference Include="UniTask">
+        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UniTask.dll</HintPath>
+      </Reference>
       <Reference Include="UnityEngine">
         <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.dll</HintPath>
       </Reference>

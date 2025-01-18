@@ -59,7 +59,7 @@ public static class CommandLoader
                     }
                     catch (Exception ex)
                     {
-                        Plugin.Logger.LogError($"Failed to create delegate for command {commandName}: {ex.Message}\n{ex.StackTrace}");
+                        Plugin.Logger.LogError($"Failed to create delegate for command {commandName}, method needs to be static: {ex.Message}");
                     }
                 }
                 else
