@@ -31,8 +31,18 @@ public static class CommandLoader
             var methods =  AccessTools.GetDeclaredMethods(type).ToArray();
             foreach (var method in methods)
             {
-                var attribute = method.GetCustomAttribute<ConsoleCommandAttribute>();
-                if (attribute == null) continue;
+                ConsoleCommandAttribute attribute = null;
+                try
+                {
+                    attribute = method.GetCustomAttribute<ConsoleCommandAttribute>();
+                    if (attribute == null) continue;
+                }
+                catch (Exception e)
+                {
+                    Plugin.Logger.LogError($"Skipping. Invalid command attribute: {attribute} - {method.Name} in {assembly.GetName().Name} Please Update the command attribute first.");
+                    continue;
+                }
+                
                 var commandName = attribute.CommandName;
                     
                 if (method.GetParameters().Length == 2 &&
@@ -45,7 +55,7 @@ public static class CommandLoader
                         var action = (Action<string[], CommandObjects>)Delegate.CreateDelegate(
                             typeof(Action<string[], CommandObjects>), method);
                         
-                        handler.RegisterCommand(commandName, action, attribute.OnlyHost, attribute.RequiredPermission);
+                        handler.RegisterCommand(commandName, action, attribute.OnlyHost, attribute.Roles);
                     }
                     catch (Exception ex)
                     {

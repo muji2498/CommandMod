@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using CommandMod.CommandHandler;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CommandMod;
 
@@ -17,7 +16,7 @@ public class Plugin : BaseUnityPlugin
     public static Plugin Instance { get; private set; } = null!;
     public new static ManualLogSource Logger { get; private set; } = BepInEx.Logging.Logger.CreateLogSource("CommandMod");
     public ChatCommandHandler CommandHandler;
-    private PermissionConfigManager _permissionConfigManager;
+    public PermissionConfigManager PermissionConfigManager;
     public new static Config Config { get; private set; }
     
     private void Awake()
@@ -26,8 +25,8 @@ public class Plugin : BaseUnityPlugin
         
         Config = new Config(base.Config);
 
-        _permissionConfigManager = new PermissionConfigManager(this);
-        CommandHandler = new ChatCommandHandler(_permissionConfigManager.Config);
+        PermissionConfigManager = new PermissionConfigManager();
+        CommandHandler = new ChatCommandHandler(PermissionConfigManager.Config);
         
         // Plugin startup logic
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
@@ -35,6 +34,7 @@ public class Plugin : BaseUnityPlugin
         var harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
         harmony.PatchAll();
     }
+
     
     [ConsoleCommand("list")]
     private static void ListCommand(string[] args, CommandObjects context)
@@ -43,7 +43,7 @@ public class Plugin : BaseUnityPlugin
         
         // Create the complete message
         var message = new StringBuilder();
-        foreach (var command in ChatCommandHandler.GetCommands())
+        foreach (var command in ChatCommandHandler.Commands)
         {
             message.Append($"{command.Key} - isHostOnly? {command.Value.OnlyHost}\n");
         }
@@ -87,6 +87,34 @@ public class Plugin : BaseUnityPlugin
         catch (Exception e)
         {
             message = $"Couldn't find player: Command given (steamid {targetPlayer})";
+            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
+        }
+    }
+    
+    [ConsoleCommand("fps", true)]
+    private static void FPSCommand(string[] args, CommandObjects arg2)
+    {
+        var callingPlayer = arg2.Player;
+        
+        var message = $"Invalid parameter amount needs to be like: (fps amount)";
+
+        if (args.Length == 0)
+        {
+            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
+            return;
+        }
+        
+        var fps = args[0];
+        try
+        {
+            if (int.TryParse(fps, out var result))
+            {
+                Application.targetFrameRate = result;
+            }
+        }
+        catch (Exception e)
+        {
+            message = $"Couldn't find player: Command given (steamid)";
             Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, message, callingPlayer, false);
         }
     }
@@ -142,12 +170,11 @@ public class Plugin : BaseUnityPlugin
         return first.Value;
     }
 
-    [ConsoleCommand("test")]
+    [ConsoleCommand("test", roles: Roles.Moderator | Roles.Owner | Roles.Admin)]
     private static void TestCommand(string[] args, CommandObjects arg2)
     {
         var player = arg2.Player;
         var message = "Thanks for the message";
         Wrapper.ChatManager.TargetReceiveMessage(player.Owner, message, player, false);
-        
     }
 }

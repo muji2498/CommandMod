@@ -2,17 +2,17 @@
 
 namespace CommandMod.CommandHandler;
 
-[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+[AttributeUsage(AttributeTargets.Method)]
 public class ConsoleCommandAttribute : Attribute
 {
     public string CommandName { get; }
     public bool OnlyHost { get; }
-    public string RequiredPermission { get; }
+    public Roles Roles { get; }
 
-    public ConsoleCommandAttribute(string commandName, bool onlyHost  = false, string requiredPermission = "*")
+    public ConsoleCommandAttribute(string commandName, bool onlyHost = false, Roles roles = Roles.None)
     {
         CommandName = commandName;
         OnlyHost = onlyHost;
-        RequiredPermission = requiredPermission;
+        Roles = roles;
     }
 }

@@ -8,6 +8,8 @@ namespace CommandMod.CommandHandler;
 public class ChatCommandHandler
 {
     private static Dictionary<string, CommandMetaData> _commands = new();
+    public static Dictionary<string, CommandMetaData> Commands => _commands;
+    
     private PermissionConfig _permissionConfig;
 
     public ChatCommandHandler(PermissionConfig permissionConfig)
@@ -15,15 +17,15 @@ public class ChatCommandHandler
         _permissionConfig = permissionConfig;
     }
     
-    public void RegisterCommand(string name, Action<string[], CommandObjects> action, bool onlyHost, string requiredPermission)
+    public void RegisterCommand(string name, Action<string[], CommandObjects> action, bool onlyHost, Roles roles)
     {
         _commands.Add(name.ToLower(), new CommandMetaData
         {
             Action = action, 
             OnlyHost = onlyHost,
-            RequiredPermission = requiredPermission
+            Roles = roles
         });
-        Plugin.Logger.LogInfo($"Registered Command: {name} - IsHostOnly: {onlyHost} - Permission: {requiredPermission}");
+        Plugin.Logger.LogInfo($"Registered Command: {name} - IsHostOnly: {onlyHost} - Permission: {roles}");
     }
 
     public void ExecuteCommand(string input, CommandObjects command)
@@ -51,8 +53,24 @@ public class ChatCommandHandler
                 Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
                 return;
             }
+            
+            if (metaData.OnlyHost && player.IsHost)
+            {
+                // player is host so bypass permission check
+                Plugin.Logger.LogInfo($"({player.PlayerName}) Executing command: {commandName} {string.Join(" ", args)}");
+                metaData.Action(args, command);
+                return;
+            }
 
-            if (!_permissionConfig.HasPermission(player.SteamID, metaData.RequiredPermission))
+            // role is none so anyone can execute
+            if (metaData.Roles == Roles.None)
+            {
+                Plugin.Logger.LogInfo($"Executing command: {commandName} {string.Join(" ", args)}");
+                metaData.Action(args, command);
+                return;
+            }
+
+            if (!_permissionConfig.HasRole(player.SteamID, metaData.Roles))
             {
                 var message = "You do not have permission to use this command.";
                 Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
@@ -68,16 +86,11 @@ public class ChatCommandHandler
             Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
         }
     }
-
-    public static Dictionary<string, CommandMetaData> GetCommands()
-    {
-        return _commands;
-    }
     
     public struct CommandMetaData
     {
         public Action<string[], CommandObjects> Action { get; set; }
         public bool OnlyHost { get; set; }
-        public string RequiredPermission { get; set; }
+        public Roles Roles { get; set; }
     }
 }

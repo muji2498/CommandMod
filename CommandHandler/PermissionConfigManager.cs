@@ -11,7 +11,7 @@ public class PermissionConfigManager
     private readonly string _configPath;
     public PermissionConfig Config { get; private set; }
 
-    public PermissionConfigManager(BaseUnityPlugin plugin)
+    public PermissionConfigManager()
     {
         _configPath = Path.Combine(Paths.ConfigPath, "PermissionConfig.json");
         LoadOrCreateConfig();
@@ -60,38 +60,12 @@ public class PermissionConfigManager
     {
         return new PermissionConfig
         {
-            Groups = new Dictionary<string, List<string>>
+            PlayerRoles = new Dictionary<ulong, Roles>
             {
-                ["*"] = new List<string> { "CommandHandler.*" },
-                ["Owner"] = new List<string> { "*" },
-                ["Admin"] = new List<string> { "ModeratorTools.*" },
-                ["Moderator"] = new List<string>
-                {
-                    "ModeratorTools.Kick",
-                    "ModeratorTools.Ban",
-                    "ModeratorTools.Teleport"
-                },
-                ["VIP"] = new List<string> { "ChatOverwrite.Rainbow" },
-                ["Chat Moderator"] = new List<string>
-                {
-                    "ModeratorTools.Say",
-                    "ModeratorTools.SayToPlayer",
-                    "ModeratorTools.Message",
-                    "ModeratorTools.Clear",
-                    "ModeratorTools.Gag",
-                    "ModeratorTools.Ungag"
-                },
-                ["Revoked Detailed Help"] = new List<string> { "-CommandHandler.CommandHelp" },
-                ["Revoked All"] = new List<string> { "-*" }
-            },
-            PlayerGroups = new Dictionary<ulong, List<string>>
-            {
-                [76561198142010443] = new List<string> { "Owner" },
-                [12341234123412341] = new List<string> { "VIP", "Chat Moderator" }
-            },
-            PlayerPermissions = new Dictionary<ulong, List<string>>
-            {
-                [76561198142010443] = new List<string> { "*" }
+                [76561198181797231] = Roles.Admin | Roles.Moderator,
+                [76561198181797631] = Roles.Owner,
+                [76561198181797281] = Roles.Moderator,
+                [76561198181797233] = Roles.None,
             }
         };
     }
