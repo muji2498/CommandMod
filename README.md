@@ -21,8 +21,13 @@ The config for this mod can be found at `GameInstallDir\BepInEx\config\CommandMo
 
 # Plugin Usage
 
-To register a command you must use reference `CommandMod.dll` in your project. Once that is done you can use the `ConsoleCommand` attribute. 
+To register a command you must reference `CommandMod.dll` in your project and set CommandMod as a bepinex dependency. Once that is done you can use the `ConsoleCommand` attribute. 
 The command plugin will then automatically find and register these command. <br>
+
+```csharp
+[BepInDependency("CommandMod", BepInDependency.DependencyFlags.HardDependency)]
+```
+
 > **TIP:** if you are making multiple commands that can be grouped together then prefix them with a common name, sort of like this `test.command1` `test.command2` <br/> 
 
 `CommandName` : Required - The name of the command. <br> 
