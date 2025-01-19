@@ -19,7 +19,6 @@ The permission config file can be found at `GameInstallDir\BepInEx\config\Permis
 Multiple roles can be assigned using a bitwise OR (|). For example, a command can have the requirement `Roles.Owner | Roles.Admin`
 meaning that only players with Owner roles and Admin roles can execute the command, this will show up in the config as `3`
 
-
 ```csharp
 public enum Roles
 {
@@ -28,18 +27,28 @@ public enum Roles
     Admin = 2,
     Moderator = 4,
 }
+
+1, // Owner
+2, // Admin
+3, // Owner + Admin
+4, // Moderator
+5, // Owner + Moderator
+6, // Admin + Moderator
+7 // Owner + Admin + Moderator
 ```
+
+
 
 
 # Built in commands
 
 `ping` - Will message `pong` back to the player that called the command. <br>
 `listplayers` - Will message a comma seperated list of the players connected to the server. <br>
-`list` (HostOnly) - Will list the commands in the Bepinex **Console** [Click here to see how to enable console](https://docs.bepinex.dev/articles/user_guide/troubleshooting.html) <br>
-`kick playername|steamid` (HostOnly) - Will kick the player specified. <br>
-`ban steamid` (HostOnly) - Will ban the steamid specified. <br>
-`unban steamid` (HostOnly) - Will unban the steamid specified. <br>
-`setfps` (HostOnly) - Will set the fps of the server.
+`list` (Owner) - Will list the commands in the Bepinex **Console** [Click here to see how to enable console](https://docs.bepinex.dev/articles/user_guide/troubleshooting.html) <br>
+`kick playername|steamid` (Owner | Admin | Moderator) - Will kick the player specified. <br>
+`ban steamid` (Owner | Admin | Moderator) - Will ban the steamid specified. <br>
+`unban steamid` (Owner | Admin | Moderator) - Will unban the steamid specified. <br>
+`setfps` (Owner) - Will set the fps of the server.
 
 # Plugin Usage
 
