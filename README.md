@@ -18,7 +18,6 @@ The config for this mod can be found at `GameInstallDir\BepInEx\config\me.muj.co
 `listplayers` - Will message a comma seperated list of the players connected to the server. <br>
 `list` (HostOnly) - Will list the commands in the Bepinex **Console** [Click here to see how to enable console](https://docs.bepinex.dev/articles/user_guide/troubleshooting.html) <br>
 `kick playername|steamid` (HostOnly) - Will kick the player specified. <br>
-`addmoney @me|steamid|name <amount>` (HostOnly) - Will add money to the player specified. <br>
 `ban steamid` (HostOnly) - Will ban the steamid specified. <br>
 `unban steamid` (HostOnly) - Will unban the steamid specified. <br>
 `setfps` (HostOnly) - Will set the fps of the server.

@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CommandMod;
 
-[BepInPlugin("me.muj.commandmod", "CommandMod","1.0.0")]
+[BepInPlugin("me.muj.commandmod", "CommandMod","1.0.1")]
 public class Plugin : BaseUnityPlugin
 {
     public static Plugin Instance { get; private set; } = null!;
@@ -64,7 +64,7 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo(sb.ToString());
     }
 
-    [ConsoleCommand("kick", true)]
+    [ConsoleCommand("kick", true, Roles.Owner | Roles.Admin | Roles.Moderator)]
     public static void KickPlayer(string[] args, CommandObjects arg2)
     {
         if (args.Length < 1)
@@ -82,35 +82,8 @@ public class Plugin : BaseUnityPlugin
         }
         NetworkManagerNuclearOption.i.KickPlayerAsync(playerToKick);
     }
-
-    [ConsoleCommand("addmoney", true)]
-    public static void AddMoneyCommand(string[] args, CommandObjects arg2)
-    {
-        if (args.Length < 2)
-        {
-            Wrapper.ChatManager.TargetReceiveMessage(arg2.Player.Owner, "Usage: [addmoney @me|steamid|name <amount>]", arg2.Player, false);
-            return;
-        }
-
-        var callingPlayer = arg2.Player;
-        var targetPlayer = args[0];
-        var amount = float.Parse(args[1]);
-        if (targetPlayer == "@me")
-        {
-            callingPlayer.AddAllocation(amount);
-            return;
-        }
-        
-        var player = Utils.IdentifyPlayer(targetPlayer);
-        if (player == null)
-        {
-            Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, "Player not found.", callingPlayer, false);
-            return;
-        }
-        player.AddAllocation(amount);
-    }
     
-    [ConsoleCommand("ban", true)]
+    [ConsoleCommand("ban", true, Roles.Owner | Roles.Admin | Roles.Moderator)]
     public static void Ban(string[] args, CommandObjects context)
     {
         if (args.Length < 1)
@@ -146,7 +119,7 @@ public class Plugin : BaseUnityPlugin
         Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, $"Player {id} banned.", context.Player, false);
     }
     
-    [ConsoleCommand("unban", true)]
+    [ConsoleCommand("unban", true,  Roles.Owner | Roles.Admin | Roles.Moderator)]
     public static void Unban(string[] args, CommandObjects context)
     {
         if (args.Length < 1)
