@@ -53,6 +53,17 @@ public class Plugin : BaseUnityPlugin
         Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, sb.ToString(), callingPlayer, false);
     }
 
+    [ConsoleCommand("list", true)]
+    public static void ListCommands(string[] args, CommandObjects arg2)
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var command in ChatCommandHandler.Commands.Keys)
+        {
+            sb.Append($"{command}, ");
+        }
+        Logger.LogInfo(sb.ToString());
+    }
+
     [ConsoleCommand("kick", true)]
     public static void KickPlayer(string[] args, CommandObjects arg2)
     {
