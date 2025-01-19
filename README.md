@@ -3,9 +3,12 @@
 ## Bepinex Version
 This mod requires bepinex version [5.4.23.2](https://github.com/BepInEx/BepInEx/releases/tag/v5.4.23.2)
 
+## Notes
+The mod will reply back showing the calling players name, i intend to replace this with something like `Server` or `Host`, this could be a configurable name aswell. 
+
 ## Config Overview
 
-The config for this mod can be found at `GameInstallDir\BepInEx\config\CommandMod.cfg`
+The config for this mod can be found at `GameInstallDir\BepInEx\config\me.muj.commandmod.cfg`
 
 `Prefix` - This Config will set the prefix that is used to trigger command. Default is `!`
 
