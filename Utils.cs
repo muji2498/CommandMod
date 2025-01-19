@@ -27,7 +27,7 @@ public class Utils
 
     public static Player FindPlayerByName(string targetPlayer)
     {
-        var first = UnitRegistry.playerLookup.First(p => p.Value.PlayerName.Contains(targetPlayer));
+        var first = UnitRegistry.playerLookup.First(p => p.Value.PlayerName.Contains(targetPlayer.ToLower()));
         return first.Value;
     }
 }
