@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CommandMod;
 
-[BepInPlugin("me.muj.commandmod", "CommandMod","1.0.2")]
+[BepInPlugin("me.muj.commandmod", "CommandMod","1.0.3")]
 public class Plugin : BaseUnityPlugin
 {
     public static Plugin Instance { get; private set; } = null!;
@@ -53,7 +53,7 @@ public class Plugin : BaseUnityPlugin
         Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, sb.ToString(), callingPlayer, false);
     }
 
-    [ConsoleCommand("list", true)]
+    [ConsoleCommand("list", Roles.Owner)]
     public static void ListCommands(string[] args, CommandObjects arg2)
     {
         StringBuilder sb = new StringBuilder();
@@ -64,7 +64,7 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo(sb.ToString());
     }
 
-    [ConsoleCommand("kick", true, Roles.Owner | Roles.Admin | Roles.Moderator)]
+    [ConsoleCommand("kick", Roles.Owner | Roles.Admin | Roles.Moderator)]
     public static void KickPlayer(string[] args, CommandObjects arg2)
     {
         if (args.Length < 1)
@@ -83,7 +83,7 @@ public class Plugin : BaseUnityPlugin
         NetworkManagerNuclearOption.i.KickPlayerAsync(playerToKick);
     }
     
-    [ConsoleCommand("ban", true, Roles.Owner | Roles.Admin | Roles.Moderator)]
+    [ConsoleCommand("ban", Roles.Owner | Roles.Admin | Roles.Moderator)]
     public static void Ban(string[] args, CommandObjects context)
     {
         if (args.Length < 1)
@@ -119,7 +119,7 @@ public class Plugin : BaseUnityPlugin
         Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, $"Player {id} banned.", context.Player, false);
     }
     
-    [ConsoleCommand("unban", true,  Roles.Owner | Roles.Admin | Roles.Moderator)]
+    [ConsoleCommand("unban",  Roles.Owner | Roles.Admin | Roles.Moderator)]
     public static void Unban(string[] args, CommandObjects context)
     {
         if (args.Length < 1)
@@ -155,7 +155,7 @@ public class Plugin : BaseUnityPlugin
         Wrapper.ChatManager.TargetReceiveMessage(context.Player.Owner, $"Player {id} unbanned.", context.Player, false);
     }
 
-    [ConsoleCommand("setfps", true)]
+    [ConsoleCommand("setfps", Roles.Owner)]
     public static void SetFPS(string[] args, CommandObjects context)
     {
         if (args.Length < 1)

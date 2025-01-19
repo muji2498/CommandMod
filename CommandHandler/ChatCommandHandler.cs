@@ -17,15 +17,14 @@ public class ChatCommandHandler
         _permissionConfig = permissionConfig;
     }
     
-    public void RegisterCommand(string name, Action<string[], CommandObjects> action, bool onlyHost, Roles roles)
+    public void RegisterCommand(string name, Action<string[], CommandObjects> action, Roles roles)
     {
         _commands.Add(name.ToLower(), new CommandMetaData
         {
             Action = action, 
-            OnlyHost = onlyHost,
             Roles = roles
         });
-        Plugin.Logger.LogInfo($"Registered Command: {name} - IsHostOnly: {onlyHost} - Permission: {roles}");
+        Plugin.Logger.LogInfo($"Registered Command: {name} - Permission: {roles}");
     }
 
     public void ExecuteCommand(string input, CommandObjects command)
@@ -45,28 +44,11 @@ public class ChatCommandHandler
 
         if (!_commands.TryGetValue(commandName, out CommandMetaData metaData))
         {
-            var message = "Couldn't find any command";
+            var message = $"Couldn't find command named {commandName}";
             Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
         }
         else
         {
-            if (metaData.OnlyHost && !player.IsHost)
-            {
-                Plugin.Logger.LogInfo($"Ignoring Command: {commandName} - Only Host: {player.IsHost}");
-
-                var message = "This command can only be executed by the host.";
-                Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
-                return;
-            }
-
-            if (metaData.OnlyHost && player.IsHost)
-            {
-                // player is host so bypass permission check
-                Plugin.Logger.LogInfo($"({player.PlayerName}) Executing command: {commandName} {string.Join(" ", args)}");
-                metaData.Action(args, command);
-                return;
-            }
-
             // role is none so anyone can execute
             if (metaData.Roles == Roles.None)
             {
@@ -90,7 +72,6 @@ public class ChatCommandHandler
     public struct CommandMetaData
     {
         public Action<string[], CommandObjects> Action { get; set; }
-        public bool OnlyHost { get; set; }
         public Roles Roles { get; set; }
     }
 }
