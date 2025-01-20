@@ -8,8 +8,9 @@ public class PermissionConfig
 
     public bool HasRole(ulong steamId, Roles role)
     {
-        Plugin.Logger.LogInfo($"Checking permissions for player {steamId} of type {(int)GetRole(steamId)} with role {(int)role}");
-        return (GetRole(steamId) & role) != 0;
+        var playerRoles = GetRole(steamId);
+        Plugin.Logger.LogInfo($"Checking permissions for player {steamId} who has player roles:({playerRoles}) with role:({role})");
+        return (playerRoles & role) != 0;
     }
 
     public Roles GetRole(ulong playerId)

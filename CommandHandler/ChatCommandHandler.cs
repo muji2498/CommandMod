@@ -19,6 +19,12 @@ public class ChatCommandHandler
     
     public void RegisterCommand(string name, Action<string[], CommandObjects> action, Roles roles)
     {
+        if (_commands.ContainsKey(name))
+        {
+            Plugin.Logger.LogError($"Command {name} is already registered");
+            return;
+        }
+        
         _commands.Add(name.ToLower(), new CommandMetaData
         {
             Action = action, 
