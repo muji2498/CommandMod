@@ -1,22 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CommandMod;
 
 public class Utils
 {
-    public static Player IdentifyPlayer(string identifier)
+    public static List<Player> IdentifyPlayer(string identifier)
     {
         if (identifier.StartsWith("76"))
         {
             if (ulong.TryParse(identifier, out var id))
             {
-                return FindPlayerBySteamId(id);
+                var player = FindPlayerBySteamId(id);
+                return player != null ? [player] : null;
             }
             throw new FormatException("Invalid Steam ID Format");
         }
         
-        return FindPlayerByName(identifier);
+        return FindPlayersByName(identifier);
     }
     
     public static Player FindPlayerBySteamId(ulong steamId)
@@ -25,9 +27,11 @@ public class Utils
         return first.Value;
     }
 
-    public static Player FindPlayerByName(string targetPlayer)
+    public static List<Player> FindPlayersByName(string targetPlayer)
     {
-        var first = UnitRegistry.playerLookup.First(p => p.Value.PlayerName.Contains(targetPlayer.ToLower()));
-        return first.Value;
+        return UnitRegistry.playerLookup
+            .Where(p => p.Value.PlayerName.IndexOf(targetPlayer, StringComparison.OrdinalIgnoreCase) >= 0)
+            .Select(p => p.Value)
+            .ToList();
     }
 }

@@ -55,7 +55,7 @@ public static class CommandLoader
                         var action = (Action<string[], CommandObjects>)Delegate.CreateDelegate(
                             typeof(Action<string[], CommandObjects>), method);
                         
-                        handler.RegisterCommand(commandName, action, attribute.Roles);
+                        handler.RegisterCommand(type, commandName, action, attribute.Roles);
                     }
                     catch (Exception ex)
                     {
