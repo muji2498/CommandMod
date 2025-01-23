@@ -60,10 +60,6 @@ like in the following example:
 `ping` - Will message `pong` back to the player that called the command. <br>
 `listplayers` - Will message a comma seperated list of the players connected to the server. <br>
 `list` (Owner) - Will list the commands in the Bepinex **Console** [Click here to see how to enable console](https://docs.bepinex.dev/articles/user_guide/troubleshooting.html) <br>
-`kick playername|steamid` (Owner | Admin | Moderator) - Will kick the player specified. <br>
-`ban steamid` (Owner | Admin | Moderator) - Will ban the steamid specified. <br>
-`unban steamid` (Owner | Admin | Moderator) - Will unban the steamid specified. <br>
-`setfps` (Owner) - Will set the fps of the server.
 
 # Plugin Usage
 

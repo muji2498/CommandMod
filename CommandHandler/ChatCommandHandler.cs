@@ -49,8 +49,11 @@ public class ChatCommandHandler
 
         if (!_commands.TryGetValue(commandName, out CommandMetaData metaData))
         {
-            var message = $"Couldn't find command named {commandName}";
-            Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
+            var suggestions = _commands.Keys.FindNearestStrings(commandName);
+            var suggestionMessage = suggestions.Any()
+                ? $"Couldn't find command named {commandName}. Did you mean: {string.Join(", ", suggestions)}?" 
+                : $"Couldn't find command named {commandName}.";
+            Wrapper.ChatManager.TargetReceiveMessage(owner, suggestionMessage, player, false);
         }
         else
         {
