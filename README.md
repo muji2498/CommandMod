@@ -69,7 +69,6 @@ The command plugin will then automatically find and register these command. <br>
 > **TIP:** if you are making multiple commands that can be grouped together then prefix them with a common name, sort of like this `test.command1` `test.command2` <br/> 
 
 `CommandName` : Required - The name of the command. <br> 
-`OnlyHost` : Default = false - Flag that only allows the host to run the command <br>
 `Roles` : Default = Roles.None - The Role(s) needed inorder to execute the command.
 
 >**NOTE:** Commands must have the parameters shown below, they can be named anything. In the args array it will pass in the arguments of the command, 
@@ -81,12 +80,6 @@ The command plugin will then automatically find and register these command. <br>
 
 ```csharp
 [ConsoleCommand("test"]
-private static void TestCommand(string[] args, CommandObjects arg2)
-{
-    // logic here
-}
-
-[ConsoleCommand("test", onlyHost=true]
 private static void TestCommand(string[] args, CommandObjects arg2)
 {
     // logic here
