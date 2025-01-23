@@ -17,12 +17,11 @@ public class ChatCommandHandler
         _permissionConfig = permissionConfig;
     }
     
-    public void RegisterCommand(string name, Action<string[], CommandObjects> action, Roles roles)
+    public void RegisterCommand(Type type, string name, Action<string[], CommandObjects> action, Roles roles)
     {
         if (_commands.ContainsKey(name))
         {
-            Plugin.Logger.LogError($"Command {name} is already registered");
-            return;
+            name = $"{type.Assembly.GetName().Name.ToLower()}.{name}"; 
         }
         
         _commands.Add(name.ToLower(), new CommandMetaData
@@ -50,8 +49,11 @@ public class ChatCommandHandler
 
         if (!_commands.TryGetValue(commandName, out CommandMetaData metaData))
         {
-            var message = $"Couldn't find command named {commandName}";
-            Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
+            var suggestions = _commands.Keys.FindNearestStrings(commandName);
+            var suggestionMessage = suggestions.Any()
+                ? $"Couldn't find command named {commandName}. Did you mean: {string.Join(", ", suggestions)}?" 
+                : $"Couldn't find command named {commandName}.";
+            Wrapper.ChatManager.TargetReceiveMessage(owner, suggestionMessage, player, false);
         }
         else
         {

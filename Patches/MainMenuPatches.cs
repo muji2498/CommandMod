@@ -1,13 +1,12 @@
 ﻿using CommandMod.CommandHandler;
 using HarmonyLib;
-using NuclearOption.Networking;
 
 namespace CommandMod.Patches;
 
-public class ServerStartPatches
+public class MainMenuPatches
 {
-    [HarmonyPatch(typeof(NetworkManagerNuclearOption), nameof(NetworkManagerNuclearOption.StartHost))]
-    public class StartHost
+    [HarmonyPatch(typeof(MainMenu), "Start")]
+    public class Start
     {
         static bool Prefix()
         {
