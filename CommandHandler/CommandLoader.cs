@@ -37,7 +37,7 @@ public static class CommandLoader
                     attribute = method.GetCustomAttribute<ConsoleCommandAttribute>();
                     if (attribute == null) continue;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Plugin.Logger.LogError($"Skipping. Invalid command attribute: {attribute} - {method.Name} in {assembly.GetName().Name} Please Update the command attribute first.");
                     continue;
