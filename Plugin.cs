@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq;
 using BepInEx;
 using BepInEx.Logging;
 using CommandMod.CommandHandler;
 using HarmonyLib;
-using NuclearOption.Networking;
-using UnityEngine;
 
 namespace CommandMod;
 
@@ -44,22 +41,14 @@ public class Plugin : BaseUnityPlugin
     public static void ListPlayers(string[] args, CommandObjects arg2)
     {
         var callingPlayer = arg2.Player;
-        StringBuilder sb = new StringBuilder();
-        foreach (var player in UnitRegistry.playerLookup)
-        {
-            sb.Append($"{player.Value.PlayerName}, ");
-        }
-        Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, sb.ToString(), callingPlayer, false);
+        var playerList = string.Join(", ", UnitRegistry.playerLookup.Select(player => player.Value.PlayerName));
+        Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, playerList, callingPlayer, false);
     }
 
     [ConsoleCommand("list", Roles.Owner)]
     public static void ListCommands(string[] args, CommandObjects arg2)
     {
-        StringBuilder sb = new StringBuilder();
-        foreach (var command in ChatCommandHandler.Commands.Keys)
-        {
-            sb.Append($"{command}, ");
-        }
-        Logger.LogInfo(sb.ToString());
+        var commandsList = string.Join(", ", ChatCommandHandler.Commands.Keys);
+        Logger.LogInfo(commandsList);
     }
 }
