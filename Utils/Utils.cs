@@ -16,7 +16,7 @@ public class Utils
                 var player = FindPlayerBySteamId(id);
                 return player != null ? [player] : null;
             }
-            throw new FormatException("Invalid Steam ID Format");
+            return null;
         }
         
         return FindPlayersByName(identifier);
