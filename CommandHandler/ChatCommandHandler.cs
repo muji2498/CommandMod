@@ -8,6 +8,7 @@ namespace CommandMod.CommandHandler;
 public class ChatCommandHandler
 {
     private static Dictionary<string, CommandMetaData> _commands = new();
+    private static Dictionary<string, Type> _commandNamesAndTypes = new();
     public static Dictionary<string, CommandMetaData> Commands => _commands;
     
     private PermissionConfig _permissionConfig;
@@ -19,17 +20,48 @@ public class ChatCommandHandler
     
     public void RegisterCommand(Type type, string name, Action<string[], CommandObjects> action, Roles roles)
     {
-        if (_commands.ContainsKey(name))
-        {
-            name = $"{type.Assembly.GetName().Name.ToLower()}.{name}"; 
+        // command was already registered so return early
+        if (ReplaceCommand(type, name, action, roles))
+        { 
+            Plugin.Logger.LogInfo($"Refreshed Command: {name} - Permission: {roles}");
+            return;
         }
         
-        _commands.Add(name.ToLower(), new CommandMetaData
+        if (_commands.ContainsKey(name))
+        {
+            name = $"{type.Assembly.GetName().Name.ToLower()}.{name}";
+        }
+        
+        _commands.Add(name, new CommandMetaData
         {
             Action = action, 
             Roles = roles
         });
+        
+        _commandNamesAndTypes.Add(name, type);
+        
         Plugin.Logger.LogInfo($"Registered Command: {name} - Permission: {roles}");
+    }
+
+    /// <summary>
+    /// method will check if command was registered before if it was then it will replace the action
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="name"></param>
+    /// <param name="action"></param>
+    /// <param name="roles"></param>
+    /// <returns>True if a commands action was replaced</returns>
+    public bool ReplaceCommand(Type type, string name, Action<string[], CommandObjects> action, Roles roles)
+    {
+        // have i registered this command before?
+        if (_commandNamesAndTypes.ContainsKey(name) || _commands.ContainsKey($"{type.Assembly.GetName().Name.ToLower()}.{name}"))
+        {
+            // i have, so replace my action
+            var commandMetaData = _commands[name];
+            commandMetaData.Action = action;
+            return true;
+        }
+        return false;
     }
 
     public void ExecuteCommand(string input, CommandObjects command)

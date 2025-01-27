@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CommandMod;
 
@@ -15,7 +16,7 @@ public class Utils
                 var player = FindPlayerBySteamId(id);
                 return player != null ? [player] : null;
             }
-            throw new FormatException("Invalid Steam ID Format");
+            return null;
         }
         
         return FindPlayersByName(identifier);
@@ -29,9 +30,20 @@ public class Utils
 
     public static List<Player> FindPlayersByName(string targetPlayer)
     {
+        var regex = GlobToRegex(targetPlayer);
+        
         return UnitRegistry.playerLookup
-            .Where(p => p.Value.PlayerName.IndexOf(targetPlayer, StringComparison.OrdinalIgnoreCase) >= 0)
+            .Where(p => Regex.IsMatch(p.Value.PlayerName, regex, RegexOptions.IgnoreCase))
             .Select(p => p.Value)
             .ToList();
+    }
+    
+    // a special thanks to DownloadPizza for this suggestion. :)
+    private static string GlobToRegex(string glob)
+    {
+        // Escape special regex characters in glob
+        return "^" + Regex.Escape(glob)
+                       .Replace(@"\*", ".*")
+                       .Replace(@"\?", ".") + "$";
     }
 }

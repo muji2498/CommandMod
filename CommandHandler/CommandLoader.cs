@@ -43,7 +43,7 @@ public static class CommandLoader
                     continue;
                 }
                 
-                var commandName = attribute.CommandName;
+                var commandName = attribute.CommandName.ToLower();
                     
                 if (method.GetParameters().Length == 2 &&
                     method.GetParameters()[0].ParameterType == typeof(string[]) &&
