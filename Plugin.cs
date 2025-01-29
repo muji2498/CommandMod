@@ -2,6 +2,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using CommandMod.CommandHandler;
+using CommandMod.Extensions;
 using HarmonyLib;
 
 namespace CommandMod;
@@ -34,7 +35,7 @@ public class Plugin : BaseUnityPlugin
     [ConsoleCommand("ping")]
     public static void Ping(string[] args, CommandObjects arg2)
     {
-        Wrapper.ChatManager.TargetReceiveMessage(arg2.Player.Owner, "Pong", arg2.Player, false);
+        arg2.Player.SendChatMessage("Pong");
     }
     
     [ConsoleCommand("listplayers")]
@@ -42,7 +43,7 @@ public class Plugin : BaseUnityPlugin
     {
         var callingPlayer = arg2.Player;
         var playerList = string.Join(", ", UnitRegistry.playerLookup.Select(player => player.Value.PlayerName));
-        Wrapper.ChatManager.TargetReceiveMessage(callingPlayer.Owner, playerList, callingPlayer, false);
+        callingPlayer.SendChatMessage(playerList);
     }
 
     [ConsoleCommand("list", Roles.Owner)]
