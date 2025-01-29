@@ -63,8 +63,12 @@ like in the following example:
 
 # Plugin Usage
 
-To register a command you must reference `CommandMod.dll` in your project. Once that is done you can use the `ConsoleCommand` attribute. 
+To register a command you must reference `CommandMod.dll` in your project. I recommend setting the command mod as a bepin dependency. Once that is done you can use the `ConsoleCommand` attribute. 
 The command plugin will then automatically find and register these command. <br>
+
+```csharp
+[BepInDependency("me.muj.commandmod")]
+```
 
 > **TIP:** if you are making multiple commands that can be grouped together then prefix them with a common name, sort of like this `test.command1` `test.command2` <br/> 
 
