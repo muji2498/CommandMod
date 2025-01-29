@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommandMod.Extensions;
 using Mirage;
 
 namespace CommandMod.CommandHandler;
@@ -67,13 +68,12 @@ public class ChatCommandHandler
     public void ExecuteCommand(string input, CommandObjects command)
     {
         var player = command.Player;
-        INetworkPlayer owner = player.Owner;
-        
+
         string[] commandParts = input.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         if (commandParts.Length == 0)
         {
-            var message = "Message Not Valid";
-            Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
+            player.SendChatMessage("Message Not Valid");
+            return;
         }
         
         string commandName = commandParts[0].Substring(1).ToLower();
@@ -85,7 +85,7 @@ public class ChatCommandHandler
             var suggestionMessage = suggestions.Any()
                 ? $"Couldn't find command named {commandName}. Did you mean: {string.Join(", ", suggestions)}?" 
                 : $"Couldn't find command named {commandName}.";
-            Wrapper.ChatManager.TargetReceiveMessage(owner, suggestionMessage, player, false);
+            player.SendChatMessage(suggestionMessage);
         }
         else
         {
@@ -99,8 +99,7 @@ public class ChatCommandHandler
 
             if (!_permissionConfig.HasRole(player.SteamID, metaData.Roles))
             {
-                var message = "You do not have permission to use this command.";
-                Wrapper.ChatManager.TargetReceiveMessage(owner, message, player, false);
+                player.SendChatMessage("You do not have permission to use this command.");
                 return;
             }
 
