@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommandMod.Extensions;
-using Mirage;
 
 namespace CommandMod.CommandHandler;
 
@@ -69,7 +68,7 @@ public class ChatCommandHandler
     {
         var player = command.Player;
 
-        string[] commandParts = input.Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] commandParts = input.Trim().Split([' '], StringSplitOptions.RemoveEmptyEntries);
         if (commandParts.Length == 0)
         {
             player.SendChatMessage("Message Not Valid");
@@ -83,29 +82,28 @@ public class ChatCommandHandler
         {
             var suggestions = _commands.Keys.FindNearestStrings(commandName);
             var suggestionMessage = suggestions.Any()
-                ? $"Couldn't find command named {commandName}. Did you mean: {string.Join(", ", suggestions)}?" 
+                ? $"Couldn't find command named {commandName}. Did you mean: {string.Join(", ", suggestions)}?"
                 : $"Couldn't find command named {commandName}.";
             player.SendChatMessage(suggestionMessage);
+            return;
         }
-        else
+
+        // role is none so anyone can execute
+        if (metaData.Roles == Roles.None)
         {
-            // role is none so anyone can execute
-            if (metaData.Roles == Roles.None)
-            {
-                Plugin.Logger.LogInfo($"Executing command: {commandName} {string.Join(" ", args)}");
-                metaData.Action(args, command);
-                return;
-            }
-
-            if (!_permissionConfig.HasRole(player.SteamID, metaData.Roles))
-            {
-                player.SendChatMessage("You do not have permission to use this command.");
-                return;
-            }
-
-            Plugin.Logger.LogInfo($"({player.PlayerName}) Executing command: {commandName} {string.Join(" ", args)}");
+            Plugin.Logger.LogInfo($"Executing command: {commandName} {string.Join(" ", args)}");
             metaData.Action(args, command);
+            return;
         }
+
+        if (!_permissionConfig.HasRole(player.SteamID, metaData.Roles))
+        {
+            player.SendChatMessage("You do not have permission to use this command.");
+            return;
+        }
+
+        Plugin.Logger.LogInfo($"({player.PlayerName}) Executing command: {commandName} {string.Join(" ", args)}");
+        metaData.Action(args, command);
     }
     
     public struct CommandMetaData

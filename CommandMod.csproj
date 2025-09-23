@@ -29,29 +29,33 @@
 
     <ItemGroup>
       <Reference Include="Assembly-CSharp">
-        <HintPath>$(GameDir)\NuclearOption_Data\Managed\Assembly-CSharp.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\Assembly-CSharp.dll</HintPath>
       </Reference>
       <Reference Include="Mirage">
-        <HintPath>$(GameDir)\NuclearOption_Data\Managed\Mirage.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\Mirage.dll</HintPath>
+      </Reference>
+      <Reference Include="Mirage.SocketLayer">
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\Mirage.SocketLayer.dll</HintPath>
       </Reference>
       <Reference Include="Newtonsoft.Json">
         <HintPath>$(GameDir)\BepInEx\plugins\Newtonsoft.Json.dll</HintPath>
       </Reference>
       <Reference Include="UniTask">
-        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UniTask.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\UniTask.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine">
-        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\UnityEngine.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.CoreModule">
-        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       </Reference>
       <Reference Include="UnityEngine.UI">
-        <HintPath>$(GameDir)\NuclearOption_Data\Managed\UnityEngine.UI.dll</HintPath>
+        <HintPath>$(GameDir)\NuclearOptionServer_Data\Managed\UnityEngine.UI.dll</HintPath>
       </Reference>
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
       <Exec Command="xcopy /Y /F &quot;$(TargetDir)CommandMod.dll&quot; &quot;$(GameDir)\BepInEx\plugins&quot;" />
+      <Exec Command="xcopy /Y /F &quot;$(TargetDir)CommandMod.pdb&quot; &quot;$(GameDir)\BepInEx\plugins&quot;" />
     </Target>
 </Project>
