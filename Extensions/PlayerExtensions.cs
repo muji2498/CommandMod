@@ -1,4 +1,6 @@
-﻿namespace CommandMod.Extensions;
+﻿using NuclearOption.Networking;
+
+namespace CommandMod.Extensions;
 
 public static class PlayerExtensions
 {

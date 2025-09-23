@@ -1,4 +1,6 @@
-﻿namespace CommandMod.CommandHandler;
+﻿using NuclearOption.Networking;
+
+namespace CommandMod.CommandHandler;
 
 public struct CommandObjects
 {
