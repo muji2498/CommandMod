@@ -1,13 +1,14 @@
 ﻿using CommandMod.CommandHandler;
 using HarmonyLib;
 using Mirage;
+using NuclearOption.Chat;
 using NuclearOption.Networking;
 
 namespace CommandMod.Patches;
 
 public class ChatManagerPatch
 {
-    [HarmonyPatch(typeof(ChatManager), "UserCode_CmdSendChatMessage_1323305531")]
+    [HarmonyPatch(typeof(ChatManager), "UserCode_CmdSendChatMessage_-456754112")]
     public class TargetReceiveMessage
     {
         static bool Prefix(ChatManager __instance, string message, bool allChat, INetworkPlayer sender)

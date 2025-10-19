@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
+using NuclearOption.Chat;
 
 namespace CommandMod;
 
 public class Wrapper
 {
-    private static FieldInfo _chatManager = AccessTools.Field(typeof(ChatManager), "i");
+    private static FieldInfo _chatManager = AccessTools.Field(typeof(NetworkSceneSingleton<ChatManager>), "i");
     public static ChatManager ChatManager
     {
         get => (ChatManager)_chatManager.GetValue(null);

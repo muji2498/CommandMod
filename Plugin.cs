@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace CommandMod;
 
-[BepInPlugin("me.muj.commandmod", "CommandMod","2.0.0")]
+[BepInPlugin("me.muj.commandmod", "CommandMod","2.0.1")]
 public class Plugin : BaseUnityPlugin
 {
     public static Plugin Instance { get; private set; } = null!;
